@@ -20,7 +20,7 @@ class ScreenShotApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Screenshot Translator")
-        self.root.geometry("300x150")
+        self.root.geometry("300x200")
         self.root.attributes("-topmost", True) # Keep window on top
 
         # UI Elements
