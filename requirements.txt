@@ -1,0 +1,6 @@
+Pillow
+deep-translator
+pywin32
+easyocr
+google-generativeai
+python-dotenv
