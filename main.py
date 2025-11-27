@@ -43,6 +43,9 @@ class ScreenShotApp:
 
     def start_capture(self):
         """Starts the screen capture process by creating a full-screen overlay."""
+        # Disable the capture button to prevent multiple clicks
+        self.btn_capture.config(state=tk.DISABLED)
+        
         self.root.withdraw() # Hide main window
         self.top = tk.Toplevel(self.root)
         self.top.attributes("-fullscreen", True)
@@ -64,6 +67,8 @@ class ScreenShotApp:
         if self.top:
             self.top.destroy()
         self.root.deiconify()
+        # Re-enable the capture button
+        self.btn_capture.config(state=tk.NORMAL)
 
     def on_button_press(self, event):
         self.start_x = event.x
@@ -126,9 +131,29 @@ class ScreenShotApp:
             win32clipboard.CloseClipboard()
             print("Translated text copied to clipboard.")
             
+            # Show success dialog in main thread
+            self.root.after(0, lambda: self.show_completion_dialog(True, translated_text, filepath))
+            
         except Exception as e:
             print(f"Error processing screenshot: {e}")
-            # messagebox.showerror("Error", str(e))
+            # Show error dialog in main thread
+            self.root.after(0, lambda: self.show_completion_dialog(False, str(e), None))
+    
+    def show_completion_dialog(self, success, message, filepath):
+        """Show completion dialog and re-enable the capture button."""
+        # Re-enable the capture button
+        self.btn_capture.config(state=tk.NORMAL)
+        
+        if success:
+            messagebox.showinfo(
+                "翻訳完了", 
+                f"翻訳が完了しました!\n\n翻訳テキストがクリップボードにコピーされました。\n\n保存先: {filepath}"
+            )
+        else:
+            messagebox.showerror(
+                "エラー", 
+                f"処理中にエラーが発生しました:\n\n{message}"
+            )
 
     def open_folder(self):
         output_dir = "captured_images"
