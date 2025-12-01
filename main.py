@@ -4,6 +4,7 @@ from PIL import ImageGrab, ImageTk
 import threading
 import os
 import ctypes
+from datetime import datetime
 
 # Enable DPI Awareness
 try:
@@ -119,6 +120,9 @@ class ScreenShotApp:
             translated_text = translator.translate_text(text)
             print(f"Translated: {translated_text}")
             
+            # Save translation to log file
+            self.save_translation_to_file(text, translated_text)
+            
             # Save original screenshot (without overlay)
             filepath = image_utils.save_image(screenshot)
             print(f"Saved to {filepath}")
@@ -155,6 +159,27 @@ class ScreenShotApp:
                 f"処理中にエラーが発生しました:\n\n{message}"
             )
 
+    def save_translation_to_file(self, original_text, translated_text):
+        """Save translation to a log file with timestamp."""
+        output_dir = "captured_images"
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        
+        log_file = os.path.join(output_dir, "translation_log.txt")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        with open(log_file, "a", encoding="utf-8") as f:
+            f.write("=" * 80 + "\n")
+            f.write(f"[{timestamp}]\n")
+            f.write(f"Original: {original_text}\n")
+            f.write(f"Translation: {translated_text}\n")
+            f.write("=" * 80 + "\n\n")
+        
+        print(f"Translation saved to {log_file}")
+        
+        # Open the log file in notepad
+        os.startfile(log_file)
+    
     def open_folder(self):
         output_dir = "captured_images"
         if not os.path.exists(output_dir):
