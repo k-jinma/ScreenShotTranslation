@@ -27,18 +27,24 @@
 
 ---
 
+## ダウンロード
+
+最新版はGitHub Releasesからダウンロードできます：
+
+**[📥 ScreenshotTranslator.exe (v1.0.0) をダウンロード](https://github.com/k-jinma/ScreenShotTranslation/releases/download/v1.0.0/ScreenshotTranslator.exe)**
+
+- **ファイルサイズ**: 約317MB
+- **対応OS**: Windows 10/11 (64bit)
+
+---
+
 ## セットアップ手順
 
-### ステップ 1: ファイルの配置
+### ステップ 1: アプリケーションのダウンロード
 
-ダウンロードしたZIPファイルを任意のフォルダに展開してください。
-
-```
-ScreenshotTranslator/
-├── ScreenshotTranslator.exe  ← メインプログラム
-├── .env.template              ← 設定ファイルのテンプレート
-└── その他の必要なファイル
-```
+1. 上記のリンクから **ScreenshotTranslator.exe** をダウンロード
+2. 任意のフォルダに配置（例: `C:\Apps\ScreenshotTranslator\`）
+3. [.env.template](https://github.com/k-jinma/ScreenShotTranslation/blob/main/.env.template) もダウンロードして同じフォルダに配置
 
 ### ステップ 2: Google Gemini APIキーの取得
 
