@@ -7,8 +7,7 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
-        # .envファイルを含める（配布時に必要）
-        ('.env', '.'),
+        # .envファイルは含めない（ユーザーが自分で設定する必要がある）
         # EasyOCRのモデルファイルを含める場合（オプション）
         # ('C:\\Users\\ユーザー名\\.EasyOCR\\model', '.EasyOCR/model'),
     ],
