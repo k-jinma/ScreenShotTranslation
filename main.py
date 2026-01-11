@@ -107,18 +107,22 @@ class ScreenShotApp:
             screenshot = ImageGrab.grab(bbox=(x1, y1, x2, y2))
             
             # OCR
-            print("Running OCR...")
+            self.log_to_file("INFO", "Starting OCR...")
             text = ocr_engine.extract_text(screenshot)
-            print(f"Extracted Text: {text}")
+            self.log_to_file("INFO", f"OCR completed. Text length: {len(text)}")
+            self.log_to_file("DEBUG", f"Extracted Text: {text}")
             
-            if not text or "Error" in text:
-                print("No text found or error occurred.")
+            if not text:
+                self.log_to_file("WARNING", "No text extracted from image")
                 text = ""
+            elif "Error" in text:
+                self.log_to_file("ERROR", f"OCR error: {text}")
             
             # Translate using Gemini
-            print("Translating...")
+            self.log_to_file("INFO", "Starting translation...")
             translated_text = translator.translate_text(text)
-            print(f"Translated: {translated_text}")
+            self.log_to_file("INFO", f"Translation completed. Length: {len(translated_text)}")
+            self.log_to_file("DEBUG", f"Translated: {translated_text}")
             
             # Save translation to log file
             self.save_translation_to_file(text, translated_text)
@@ -139,7 +143,9 @@ class ScreenShotApp:
             self.root.after(0, lambda: self.show_completion_dialog(True, translated_text, filepath))
             
         except Exception as e:
-            print(f"Error processing screenshot: {e}")
+            import traceback
+            error_details = traceback.format_exc()
+            self.log_to_file("ERROR", f"Error processing screenshot: {e}\n{error_details}")
             # Show error dialog in main thread
             self.root.after(0, lambda: self.show_completion_dialog(False, str(e), None))
     
@@ -154,11 +160,24 @@ class ScreenShotApp:
                 f"翻訳が完了しました!\n\n翻訳テキストがクリップボードにコピーされました。\n\n保存先: {filepath}"
             )
         else:
+            # Show error with suggestion to check log file
             messagebox.showerror(
                 "エラー", 
-                f"処理中にエラーが発生しました:\n\n{message}"
+                f"処理中にエラーが発生しました:\n\n{message}\n\n詳細は captured_images\\app_log.txt をご確認ください。"
             )
 
+    def log_to_file(self, level, message):
+        """Write log message to error log file."""
+        output_dir = "captured_images"
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        
+        error_log = os.path.join(output_dir, "app_log.txt")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        with open(error_log, "a", encoding="utf-8") as f:
+            f.write(f"[{timestamp}] {level}: {message}\n")
+    
     def save_translation_to_file(self, original_text, translated_text):
         """Save translation to a log file with timestamp."""
         output_dir = "captured_images"
@@ -175,7 +194,7 @@ class ScreenShotApp:
             f.write(f"Translation: {translated_text}\n")
             f.write("=" * 80 + "\n\n")
         
-        print(f"Translation saved to {log_file}")
+        self.log_to_file("INFO", f"Translation saved to {log_file}")
         
         # Open the log file in notepad
         os.startfile(log_file)
